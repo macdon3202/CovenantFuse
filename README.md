@@ -69,9 +69,12 @@ wallet with no constructor arguments. Do not use the deployer for the evidence
 lifecycle. Run [`scripts/run_studionet_e2e.py`](scripts/run_studionet_e2e.py)
 with two independent test-wallet keys after deployment.
 
-Live address and transaction evidence remain intentionally pending until an
-actual StudioNet deployment is supplied. Local tests are never represented as
-live evidence.
+Current V2 deployment:
+[`0x48ABed7cC56F6a69E15fFd43Be4eda5Fc95b18f1`](https://explorer-studio.genlayer.com/address/0x48ABed7cC56F6a69E15fFd43Be4eda5Fc95b18f1).
+
+Live evidence: [`docs/STUDIONET_E2E.md`](docs/STUDIONET_E2E.md),
+[`docs/studionet-e2e.json`](docs/studionet-e2e.json) and
+[`docs/studionet-adversarial.json`](docs/studionet-adversarial.json).
 
 The initial V1 deployment
 `0xc5Af70baAdaDAe68D6A258CB59dC1cBE629fE0a0` is superseded. StudioNet delivered

@@ -1,0 +1,143 @@
+{
+  "network": "studionet",
+  "contract": "0x48ABed7cC56F6a69E15fFd43Be4eda5Fc95b18f1",
+  "contract_url": "https://explorer-studio.genlayer.com/address/0x48ABed7cC56F6a69E15fFd43Be4eda5Fc95b18f1",
+  "wallet_a": "0xFeD97e2aE1A8C1983b7cA206B3545e6A2c685E43",
+  "wallet_b": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+  "cases": [
+    {
+      "name": "REPLAY_CONSUME",
+      "transaction": {
+        "hash": "0x3cb4a1622371384f591f1e5be76c1b4cccd74f77cf403a84ae6533ed3662f2a9",
+        "url": "https://explorer-studio.genlayer.com/tx/0x3cb4a1622371384f591f1e5be76c1b4cccd74f77cf403a84ae6533ed3662f2a9",
+        "status": "FINALIZED",
+        "consensus": "MAJORITY_AGREE",
+        "execution": "ERROR",
+        "returned": "PERMIT_NOT_ACTIVE"
+      },
+      "pre_post_equal": true
+    },
+    {
+      "name": "DUPLICATE_BUNDLE",
+      "transaction": {
+        "hash": "0x7a7cb07ce689d402a4b65f2cc965095d48626a8f9f53dfa97e180023a034d954",
+        "url": "https://explorer-studio.genlayer.com/tx/0x7a7cb07ce689d402a4b65f2cc965095d48626a8f9f53dfa97e180023a034d954",
+        "status": "FINALIZED",
+        "consensus": "MAJORITY_AGREE",
+        "execution": "ERROR",
+        "returned": "BUNDLE_ALREADY_REGISTERED"
+      },
+      "pre_post_equal": true
+    },
+    {
+      "name": "CREATOR_SELF_REVIEW",
+      "transaction": {
+        "hash": "0x8d06c3e9b6c2a12372200560c21cf69d8e252b978c0f3318b19d8ea4bee1fa34",
+        "url": "https://explorer-studio.genlayer.com/tx/0x8d06c3e9b6c2a12372200560c21cf69d8e252b978c0f3318b19d8ea4bee1fa34",
+        "status": "FINALIZED",
+        "consensus": "MAJORITY_AGREE",
+        "execution": "ERROR",
+        "returned": "INDEPENDENT_REVIEWER_REQUIRED"
+      },
+      "pre_post_equal": true
+    },
+    {
+      "name": "CONFLICT_REVIEW",
+      "create": {
+        "hash": "0xe7d50cf1228c713d762eaf74a9cb84045a628242009eff474147d2f79f4d6bad",
+        "url": "https://explorer-studio.genlayer.com/tx/0xe7d50cf1228c713d762eaf74a9cb84045a628242009eff474147d2f79f4d6bad",
+        "status": "FINALIZED",
+        "consensus": "MAJORITY_AGREE",
+        "execution": "SUCCESS",
+        "returned": "2"
+      },
+      "review": {
+        "hash": "0x714a3a06dfb8cefee2a058b77e8c8f9c9ffff5bd05a3216798d85d431d689ffa",
+        "url": "https://explorer-studio.genlayer.com/tx/0x714a3a06dfb8cefee2a058b77e8c8f9c9ffff5bd05a3216798d85d431d689ffa",
+        "status": "FINALIZED",
+        "consensus": "MAJORITY_AGREE",
+        "execution": "SUCCESS",
+        "returned": "\"BLOCKED\""
+      },
+      "docket": {
+        "action_digest": "f81310918eb3f8feadf90d86dc579e80c1907ed69fff2937f72b0a14fe24c578",
+        "base_clause": "Treasury transfers require a seven-day waiting period.",
+        "bundle_digest": "9ce45764ad48e835985e8614a1590848d650235ff495c3b0ca8c211c40bc16cd",
+        "consumer": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+        "creates_bypass": "YES",
+        "creator": "0xFeD97e2aE1A8C1983b7cA206B3545e6A2c685E43",
+        "exception_clause": "Emergency RPC invoices may bypass the waiting period and execute immediately.",
+        "id": 2,
+        "mandatory_rule_preserved": "NO",
+        "policy_key": "TREASURY_WAIT",
+        "reason": "MANDATORY_SAFEGUARD_CONFLICT",
+        "reviewer": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+        "scope_clause": "RPC infrastructure invoice payments.",
+        "scope_match": "YES",
+        "state": "BLOCKED",
+        "supersedes": 0,
+        "verdict": "CONFLICT"
+      }
+    },
+    {
+      "name": "CONSUME_BLOCKED_DOCKET",
+      "transaction": {
+        "hash": "0x9bfb47077c9d6ac30e451d007c6eb246999ec31a2b74837dc966fc5f1cd0ffee",
+        "url": "https://explorer-studio.genlayer.com/tx/0x9bfb47077c9d6ac30e451d007c6eb246999ec31a2b74837dc966fc5f1cd0ffee",
+        "status": "FINALIZED",
+        "consensus": "MAJORITY_AGREE",
+        "execution": "ERROR",
+        "returned": "PERMIT_NOT_ACTIVE"
+      },
+      "pre_post_equal": true
+    }
+  ],
+  "final": {
+    "config": {
+      "architecture": "SEALED_CLAUSE_DOCKET_ONE_USE_PERMIT",
+      "deployer_authority": "NONE",
+      "docket_count": 2,
+      "version": "COVENANT_FUSE_V2"
+    },
+    "dockets": [
+      {
+        "action_digest": "8039951b5eba45e01a924728cd2db310f59495390a1aa895c42e57c24dd1c653",
+        "base_clause": "Treasury transfers require a seven-day waiting period.",
+        "bundle_digest": "b51d42dd3d1d55d2a2c9889e5eb1641af99dd40f7ac3d8666390446c25d94e5a",
+        "consumer": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+        "creates_bypass": "NO",
+        "creator": "0xFeD97e2aE1A8C1983b7cA206B3545e6A2c685E43",
+        "exception_clause": "Emergency RPC invoices may be paid after the same seven-day waiting period.",
+        "id": 1,
+        "mandatory_rule_preserved": "YES",
+        "policy_key": "TREASURY_WAIT",
+        "reason": "PERMIT_CONSUMED",
+        "reviewer": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+        "scope_clause": "RPC infrastructure invoice payments.",
+        "scope_match": "YES",
+        "state": "CONSUMED",
+        "supersedes": 0,
+        "verdict": "CONSISTENT"
+      },
+      {
+        "action_digest": "f81310918eb3f8feadf90d86dc579e80c1907ed69fff2937f72b0a14fe24c578",
+        "base_clause": "Treasury transfers require a seven-day waiting period.",
+        "bundle_digest": "9ce45764ad48e835985e8614a1590848d650235ff495c3b0ca8c211c40bc16cd",
+        "consumer": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+        "creates_bypass": "YES",
+        "creator": "0xFeD97e2aE1A8C1983b7cA206B3545e6A2c685E43",
+        "exception_clause": "Emergency RPC invoices may bypass the waiting period and execute immediately.",
+        "id": 2,
+        "mandatory_rule_preserved": "NO",
+        "policy_key": "TREASURY_WAIT",
+        "reason": "MANDATORY_SAFEGUARD_CONFLICT",
+        "reviewer": "0xc67532aeF9D2879cBA9375a02E6217A3524657B8",
+        "scope_clause": "RPC infrastructure invoice payments.",
+        "scope_match": "YES",
+        "state": "BLOCKED",
+        "supersedes": 0,
+        "verdict": "CONFLICT"
+      }
+    ]
+  }
+}

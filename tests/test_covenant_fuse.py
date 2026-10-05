@@ -11,11 +11,6 @@ OUTSIDER = bytes.fromhex("33" * 20)
 ACTION = hashlib.sha256(b"pay rpc invoice 42").hexdigest()
 
 
-def address(value):
-    from genlayer.py.types import Address
-    return Address(value)
-
-
 def deploy(vm, direct_deploy):
     vm.strict_mocks = True
     vm.check_pickling = True
@@ -25,7 +20,7 @@ def deploy(vm, direct_deploy):
 
 def create(contract, vm, base="Treasury transfers require a seven-day waiting period.", exception="Emergency RPC invoices may be paid after the same seven-day waiting period.", scope="RPC infrastructure invoice payments.", action=ACTION, consumer=CONSUMER, supersedes=0):
     with vm.prank(CREATOR):
-        return contract.create_docket("TREASURY_WAIT", base, exception, scope, action, address(consumer), supersedes)
+        return contract.create_docket("TREASURY_WAIT", base, exception, scope, action, consumer, supersedes)
 
 
 def finding(verdict="NARROW_EXCEPTION", base="YES", effect="YES", scope="YES", preserved="YES", bypass="NO", reason="BOUNDED_EXCEPTION"):
@@ -130,7 +125,7 @@ def test_prompt_injection_is_clause_data(direct_vm, direct_deploy):
 def test_superseding_revision_requires_terminal_same_creator_and_policy(direct_vm, direct_deploy):
     c = deploy(direct_vm, direct_deploy); create(c, direct_vm)
     with direct_vm.prank(CREATOR), direct_vm.expect_revert("PRIOR_DOCKET_NOT_TERMINAL"):
-        c.create_docket("TREASURY_WAIT", "A", "B", "C", hashlib.sha256(b"new").hexdigest(), address(CONSUMER), 1)
+        c.create_docket("TREASURY_WAIT", "A", "B", "C", hashlib.sha256(b"new").hexdigest(), CONSUMER, 1)
     with direct_vm.prank(CREATOR): c.cancel_docket(1)
     assert create(c, direct_vm, base="Updated base.", action=hashlib.sha256(b"new").hexdigest(), supersedes=1) == 2
     assert c.get_docket(2)["supersedes"] == 1
@@ -139,16 +134,30 @@ def test_superseding_revision_requires_terminal_same_creator_and_policy(direct_v
 def test_duplicate_bundle_rejected_without_counter_change(direct_vm, direct_deploy):
     c = deploy(direct_vm, direct_deploy); create(c, direct_vm); before = c.get_config()
     with direct_vm.prank(CREATOR), direct_vm.expect_revert("BUNDLE_ALREADY_REGISTERED"):
-        c.create_docket("TREASURY_WAIT", "Treasury transfers require a seven-day waiting period.", "Emergency RPC invoices may be paid after the same seven-day waiting period.", "RPC infrastructure invoice payments.", ACTION, address(CONSUMER), 0)
+        c.create_docket("TREASURY_WAIT", "Treasury transfers require a seven-day waiting period.", "Emergency RPC invoices may be paid after the same seven-day waiting period.", "RPC infrastructure invoice payments.", ACTION, CONSUMER, 0)
     assert c.get_config() == before
 
 
 def test_deployer_has_no_authority_and_any_wallet_can_create(direct_vm, direct_deploy):
     c = deploy(direct_vm, direct_deploy)
     with direct_vm.prank(OUTSIDER):
-        assert c.create_docket("OPS", "All upgrades require review.", "Routine patches still require review.", "Routine patches.", hashlib.sha256(b"patch").hexdigest(), address(CONSUMER), 0) == 1
+        assert c.create_docket("OPS", "All upgrades require review.", "Routine patches still require review.", "Routine patches.", hashlib.sha256(b"patch").hexdigest(), CONSUMER, 0) == 1
     cfg = c.get_config()
-    assert cfg["deployer_authority"] == "NONE" and cfg["architecture"] == "SEALED_CLAUSE_DOCKET_ONE_USE_PERMIT"
+    assert cfg["version"] == "COVENANT_FUSE_V2" and cfg["deployer_authority"] == "NONE" and cfg["architecture"] == "SEALED_CLAUSE_DOCKET_ONE_USE_PERMIT"
+
+
+@pytest.mark.parametrize("consumer", [
+    "0x" + "22" * 19,
+    "0x" + "gg" * 20,
+    "0x" + "00" * 20,
+    "2222222222222222222222222222222222222222",
+])
+def test_consumer_string_is_validated_before_storage(direct_vm, direct_deploy, consumer):
+    c = deploy(direct_vm, direct_deploy)
+    before = c.get_config()
+    with direct_vm.prank(CREATOR), direct_vm.expect_revert("INVALID_CONSUMER"):
+        c.create_docket("OPS", "All upgrades require review.", "Routine patches still require review.", "Routine patches.", ACTION, consumer, 0)
+    assert c.get_config() == before
 
 
 def test_runner_header_is_pinned():

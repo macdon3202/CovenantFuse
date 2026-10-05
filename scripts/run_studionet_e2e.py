@@ -36,7 +36,9 @@ def signals(info):
     if isinstance(receipts, dict): receipts = [receipts]
     leader = next((r for r in receipts if isinstance(r, dict) and str(r.get("mode", "")).lower() == "leader"), receipts[0] if receipts else {})
     execution = str(leader.get("execution_result") or info.get("execution_result") or "UNKNOWN").upper()
-    readable = ((leader.get("result") or {}).get("payload") or {}).get("readable") if isinstance(leader.get("result"), dict) else None
+    result = leader.get("result") if isinstance(leader.get("result"), dict) else {}
+    payload = result.get("payload") if isinstance(result.get("payload"), dict) else {}
+    readable = payload.get("readable") or result.get("readable")
     return status, consensus, execution, readable
 
 
@@ -68,7 +70,7 @@ def main():
     wallet_b = create_account(os.environ["SERVICE_LEDGER_KEY_B"])
     client = create_client(chain=studionet, account=wallet_a, endpoint=RPC)
     cfg = read(client, address, wallet_a, "get_config", [])
-    if cfg.get("version") != "COVENANT_FUSE_V1" or cfg.get("deployer_authority") != "NONE": raise AssertionError(cfg)
+    if cfg.get("version") != "COVENANT_FUSE_V2" or cfg.get("deployer_authority") != "NONE": raise AssertionError(cfg)
     action = hashlib.sha256(b"pay rpc invoice 42").hexdigest()
     args = ["TREASURY_WAIT", "Treasury transfers require a seven-day waiting period.", "Emergency RPC invoices may be paid after the same seven-day waiting period.", "RPC infrastructure invoice payments.", action, str(wallet_b.address), 0]
     create_tx = send(client, address, wallet_a, "create_docket", args)

@@ -72,3 +72,9 @@ with two independent test-wallet keys after deployment.
 Live address and transaction evidence remain intentionally pending until an
 actual StudioNet deployment is supplied. Local tests are never represented as
 live evidence.
+
+The initial V1 deployment
+`0xc5Af70baAdaDAe68D6A258CB59dC1cBE629fE0a0` is superseded. StudioNet delivered
+its public `Address` argument as a string, so V1 failed before storage. V2 takes
+a string, validates the exact nonzero 20-byte hex form and converts it to
+`Address` inside the contract. V1 must not be submitted as a working deployment.

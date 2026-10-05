@@ -7,7 +7,7 @@ import json
 from typing import Any
 from genlayer import *
 
-VERSION = "COVENANT_FUSE_V1"
+VERSION = "COVENANT_FUSE_V2"
 PROMPT_TAG = "COVENANT_FUSE_RELATION_V1"
 MAX_CLAUSE_BYTES = 1200
 MAX_MODEL_BYTES = 900
@@ -72,6 +72,14 @@ def digest(value: dict) -> str:
 def hash_token(value: Any, code: str) -> str:
     req(isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value), code)
     return value
+
+
+def address_token(value: Any, code: str) -> Address:
+    req(isinstance(value, str) and len(value) == 42 and value.startswith("0x"), code)
+    req(all(c in "0123456789abcdefABCDEF" for c in value[2:]), code)
+    parsed = Address(value)
+    req(parsed != Address("0x0000000000000000000000000000000000000000"), code)
+    return parsed
 
 
 def safe_finding() -> dict:
@@ -141,14 +149,13 @@ class CovenantFuse(gl.Contract):
         self.docket_count = u256(0)
 
     @gl.public.write
-    def create_docket(self, policy_key: str, base_clause: str, exception_clause: str, scope_clause: str, action_digest: str, consumer: Address, supersedes: u256) -> u256:
+    def create_docket(self, policy_key: str, base_clause: str, exception_clause: str, scope_clause: str, action_digest: str, consumer: str, supersedes: u256) -> u256:
         key = token(policy_key, 64, "INVALID_POLICY_KEY")
         base = text(base_clause, "INVALID_BASE_CLAUSE")
         exception = text(exception_clause, "INVALID_EXCEPTION_CLAUSE")
         scope = text(scope_clause, "INVALID_SCOPE_CLAUSE")
         action = hash_token(action_digest, "INVALID_ACTION_DIGEST")
-        zero = Address("0x0000000000000000000000000000000000000000")
-        req(consumer != zero, "INVALID_CONSUMER")
+        consumer_address = address_token(consumer, "INVALID_CONSUMER")
         parent = int(supersedes)
         if parent > 0:
             req(supersedes in self.dockets, "SUPERSEDED_DOCKET_NOT_FOUND")
@@ -156,11 +163,12 @@ class CovenantFuse(gl.Contract):
             req(prior.creator == gl.message.sender_address, "SUPERSEDE_CREATOR_MISMATCH")
             req(prior.policy_key == key, "SUPERSEDE_POLICY_MISMATCH")
             req(prior.state in {BLOCKED, REVIEW_REQUIRED, UNRESOLVED, CANCELLED, CONSUMED}, "PRIOR_DOCKET_NOT_TERMINAL")
-        core = {"creator": str(gl.message.sender_address), "consumer": str(consumer), "policy_key": key, "base_clause": base, "exception_clause": exception, "scope_clause": scope, "action_digest": action, "supersedes": parent}
+        core = {"creator": str(gl.message.sender_address), "consumer": str(consumer_address), "policy_key": key, "base_clause": base, "exception_clause": exception, "scope_clause": scope, "action_digest": action, "supersedes": parent}
         bundle = digest(core)
         req(not self.bundle_replay.get(bundle, False), "BUNDLE_ALREADY_REGISTERED")
         docket_id = self.docket_count + u256(1)
-        self.dockets[docket_id] = Docket(gl.message.sender_address, consumer, key, base, exception, scope, action, bundle, supersedes, SEALED, "", zero, "", UNKNOWN, UNKNOWN, UNKNOWN)
+        zero = Address("0x0000000000000000000000000000000000000000")
+        self.dockets[docket_id] = Docket(gl.message.sender_address, consumer_address, key, base, exception, scope, action, bundle, supersedes, SEALED, "", zero, "", UNKNOWN, UNKNOWN, UNKNOWN)
         self.bundle_replay[bundle] = True
         self.docket_count = docket_id
         return docket_id
